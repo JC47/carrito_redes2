@@ -57,14 +57,14 @@ public class Client {
 
     private String getFilesDir() {
         String directorio = System.getProperty("user.dir");
-            directorio+=CLIENT_PATH;
-            System.out.println(directorio);
-            File folder=new File(directorio);
-            folder.mkdir();
-            if(folder.exists())
-                if(folder.isDirectory())
-                    System.out.println("Carpeta creada");
-            return directorio;
+        directorio+=CLIENT_PATH;
+        System.out.println(directorio);
+        File folder=new File(directorio);
+        folder.mkdir();
+        if(folder.exists())
+            if(folder.isDirectory())
+                System.out.println("Carpeta creada");
+        return directorio;
     }
     
 }

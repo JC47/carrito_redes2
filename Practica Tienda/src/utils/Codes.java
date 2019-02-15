@@ -10,10 +10,11 @@ package utils;
  * @author Dany
  */
 public class Codes {
-    public static final int REQUEST_REFRESH=1;
+    public static final int REQUEST_GET_STOCK=1;
     public static final int REQUEST_UPLOAD=2;
     public static final int REQUEST_DOWNLOAD=3;
-    public static final int REQUEST_CLOSE=4;
+    public static final int REQUEST_BUY=4;
+    public static final int REQUEST_CLOSE=10;
     public static final int ON_READY_RESULT=200;
     public static final int SERVER_REQUEST_PORT=8000;
     public static final int SERVER_LOAD_PORT=7200;
