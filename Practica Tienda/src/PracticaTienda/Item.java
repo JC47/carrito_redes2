@@ -16,6 +16,7 @@ public class Item implements Serializable{
     private String pic;
     private String name;
     private int stock;
+    private int price;
     
     public Item(){
         
