@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static utils.Codes.*;
@@ -54,6 +55,20 @@ public class Client {
             }
         }while(requestCode!=TASK_COMPLETE);
     }
+    
+    public ArrayList<Item> getStock(){
+        
+    }
+    
+    public void buy(ArrayList<Item> carrito){
+        
+    }
+    
+    public File getTicket(){
+        
+    }
+    
+    
 
     private String getFilesDir() {
         String directorio = System.getProperty("user.dir");
