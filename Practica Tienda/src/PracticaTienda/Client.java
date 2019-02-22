@@ -60,11 +60,11 @@ public class Client {
         
     }
     
-    public void buy(ArrayList<Item> carrito){
+    public File buy(ArrayList<Item> carrito){
         
     }
     
-    public File getTicket(){
+    private File getTicket(){
         
     }
     
