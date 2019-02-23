@@ -56,7 +56,7 @@ public class Client {
         }while(requestCode!=TASK_COMPLETE);
     }
     
-    public ArrayList<Item> getStock(){
+    /*public ArrayList<Item> getStock(){
         
     }
     
@@ -66,7 +66,7 @@ public class Client {
     
     private File getTicket(){
         
-    }
+    }*/
     
     
 
