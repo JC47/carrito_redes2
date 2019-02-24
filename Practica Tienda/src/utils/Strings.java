@@ -12,6 +12,6 @@ import java.io.File;
  * @author dany
  */
 public class Strings {
-    public static final String CLIENT_PATH=File.separator+"Cliente";
-    public static final String SERVER_PATH=File.separator+"Servidor";
+    public static final String CLIENT_PATH=File.separator+"Cliente"+File.separator;
+    public static final String SERVER_PATH=File.separator+"Servidor"+File.separator;
 }

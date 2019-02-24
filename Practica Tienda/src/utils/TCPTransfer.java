@@ -79,4 +79,12 @@ public class TCPTransfer{
         return Codes.ERROR;
     }
   }
+  
+  public ObjectOutputStream getOutput(){
+      return oos;
+  }
+  
+  public ObjectInputStream getInput(){
+      return ois;
+  }
 }

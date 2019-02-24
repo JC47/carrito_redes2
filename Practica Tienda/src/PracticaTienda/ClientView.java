@@ -20,11 +20,11 @@ public class ClientView extends javax.swing.JFrame {
         
         this.productos = new ArrayList<Item>();
         
-        Item i1 = new Item("foto1.jpg", "Producto1",10,101);
-        Item i2 = new Item("foto2.jpg", "Producto2",10,102);
-        Item i3 = new Item("foto3.jpg", "Producto3",10,103);
-        Item i4 = new Item("foto4.jpg", "Producto4",10,104);
-        Item i5 = new Item("foto5.jpg", "Producto5",10,105);
+        Item i1 = new Item(1,"foto1.jpg", "Producto1",10,101);
+        Item i2 = new Item(2,"foto2.jpg", "Producto2",10,102);
+        Item i3 = new Item(3,"foto3.jpg", "Producto3",10,103);
+        Item i4 = new Item(4,"foto4.jpg", "Producto4",10,104);
+        Item i5 = new Item(5,"foto5.jpg", "Producto5",10,105);
         
         this.productos.add(i1);
         this.productos.add(i2);

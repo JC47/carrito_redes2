@@ -26,16 +26,20 @@ public class Client {
     ObjectInputStream ois;
     TCPTransfer transfer;
     String directorio;
+    ArrayList <Item> cart;
     
     public Client(ObjectOutputStream oos,ObjectInputStream ois){
         this.oos=oos;
         this.ois=ois;
         transfer=new TCPTransfer(oos,ois);
         directorio=getFilesDir();
+        cart=new ArrayList();
     }
     
-    public void getFiles(){
+    public void getFiles() throws IOException{
         int requestCode=0;
+        oos.writeInt(REQUEST_DOWNLOAD);
+        oos.flush();
         do{
             try{
                 requestCode=ois.readInt();
@@ -46,7 +50,7 @@ public class Client {
             if(requestCode==REQUEST_UPLOAD){
                 try {
                     int result=transfer.getFile(directorio);
-                    System.out.println("Enviando resultado al cliente: "+result);
+                    System.out.println("Enviando resultado: "+result);
                     oos.writeInt(result);
                     oos.flush();
                 } catch (IOException ex) {
@@ -56,17 +60,87 @@ public class Client {
         }while(requestCode!=TASK_COMPLETE);
     }
     
-    /*public ArrayList<Item> getStock(){
-        
+    public ArrayList<Item> getStock() throws IOException{
+        System.out.println("Obteniendo Stock");
+        ArrayList stock=new ArrayList();
+        int requestCode=0;
+        oos.writeInt(REQUEST_GET_STOCK);
+        oos.flush();
+        do{
+            try{
+                requestCode=ois.readInt();
+                
+            }catch(IOException e){
+                requestCode=0;
+            }
+            if(requestCode==REQUEST_UPLOAD){
+                try {
+                    Item i=(Item)ois.readObject();
+                    stock.add(i);
+                    System.out.println("Artículo recibido: "+i.getName());
+                    oos.writeInt(ON_READY_RESULT);
+                    oos.flush();
+                } catch (IOException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }while(requestCode!=TASK_COMPLETE);
+        return stock;
     }
     
-    public File buy(ArrayList<Item> carrito){
-        
+    /*public File buy(ArrayList<Item> carrito){
+    return     
     }
     
     private File getTicket(){
         
     }*/
+    /**
+     * 
+     * @param i producto a agregar
+     * @return lista con el carrito
+     */
+    public ArrayList<Item> addToCart(Item i){//Agrega un artículo al carrito
+        if(cart.isEmpty()){
+            cart.add(new Item(i));
+        }
+        else{
+            boolean flag=false;
+            for(Item item:cart){
+                if(item.getId()==i.getId()){//Si el producto ya se había agregado, se incrementa el contador stock
+                    item.setStock(item.getStock()+1);
+                    flag=true;
+                    break;
+                }
+            }
+            if(!flag){//Si el producto no estaba en el carrito
+                cart.add(new Item(i));
+            }
+        }
+        return cart;
+    }
+    
+    public ArrayList<Item>removeFromCart(Item i){
+        boolean flag=false;
+        for(Item item:cart){
+            if(item.getId()==i.getId()){
+                flag=true;
+                if(item.getStock()==1){//Si sólo había 1 se remueve de la lista
+                    cart.remove(item);
+                }
+                else{
+                    item.setStock(item.getStock()-1);//Si había más de uno se resta una unidad al pedido
+                }
+                break;
+            }
+        }
+        if(!flag){
+            System.out.println("El producto seleccionado no estaba en el carrito");
+        }
+        return cart;
+    }
     
     
 
@@ -81,5 +155,6 @@ public class Client {
                 System.out.println("Carpeta creada");
         return directorio;
     }
+    
     
 }
