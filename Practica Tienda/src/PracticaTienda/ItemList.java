@@ -5,10 +5,28 @@
  */
 package PracticaTienda;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  *
  * @author dany
  */
-public class ItemList {
+public class ItemList implements Serializable{
+    ArrayList <Item> items;
     
+    public ItemList(){
+        
+    }
+    public ItemList(ArrayList <Item> items){
+        this.items=items;
+    }
+    
+    public ArrayList<Item> getList(){
+        return items;
+    }
+    
+    public void setList(ArrayList<Item> items){
+        this.items=items;
+    }
 }

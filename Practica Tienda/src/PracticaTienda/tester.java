@@ -5,6 +5,7 @@
  */
 package PracticaTienda;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -50,7 +51,8 @@ public class tester {
             for(Item i:cart){
                 System.out.println("Artículo: "+i.getName()+" Cantidad: "+i.getStock());
             }
-            //File ticket=cliente.buy(cart);
+            File ticket=cliente.buy(cart);
+            System.out.println("Se recibió el ticket: "+ticket.getName());
             
             oos.writeInt(REQUEST_CLOSE);//Cierra la conexión con el servidor
             oos.flush();

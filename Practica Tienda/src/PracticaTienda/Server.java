@@ -5,7 +5,11 @@
  */
 package PracticaTienda;
 
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import utils.Codes;
 import static utils.Codes.*;
 import static utils.Strings.CLIENT_PATH;
 import static utils.Strings.SERVER_PATH;
@@ -31,6 +36,7 @@ public class Server {
         try {
             ServerSocket ss=new ServerSocket(SERVER_REQUEST_PORT);
             for(;;){
+                System.out.println("Preparado para nueva conexión");
                 Socket s=ss.accept();
                 ArrayList<Item> stock=getStock();
                 ArrayList<File> images=getPics(directorio);
@@ -50,7 +56,7 @@ public class Server {
                              break;
                         case REQUEST_GET_STOCK:sendStock(stock,oos,ois);
                             break;
-                        case REQUEST_BUY://Comprar y enviar ticket
+                        case REQUEST_BUY:buy(stock,oos,ois,transfer);
                             break;
                     }
                 }while(requestCode!=REQUEST_CLOSE);
@@ -145,21 +151,77 @@ public class Server {
     }
 
     private static void sendStock(ArrayList<Item> stock, ObjectOutputStream oos, ObjectInputStream ois) {
-        try {
+        /*try {
             System.out.println("Enviando catálogo");
             for(Item item:stock){
-                oos.writeInt(REQUEST_UPLOAD);
-                oos.flush();
-                System.out.println("Enviando artículo: "+item.getName());
-                oos.writeObject(item);
-                ois.readInt();
+            oos.writeInt(REQUEST_UPLOAD);
+            oos.flush();
+            System.out.println("Enviando artículo: "+item.getName());
+            oos.writeObject(item);
+            ois.readInt();
             }
             oos.writeInt(TASK_COMPLETE);
             oos.flush();
             System.out.println("Catálogo enviado");
+            } catch (IOException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            }*/
+        try {
+            oos.writeObject(new ItemList(stock));
+            oos.flush();
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+    }
+
+    private static void buy(ArrayList<Item> stock, ObjectOutputStream oos, ObjectInputStream ois,TCPTransfer transfer) {
+        try {
+            ItemList list=(ItemList) ois.readObject();
+            ArrayList<Item> cart=list.getList();
+            for(Item i:cart){//Descuenta los artíclulos del stock de la tienda
+                //boolean flag=false;
+                for(Item a:stock){
+                    if(i.getId()==a.getId()){
+                        a.setStock(a.getStock()-i.getStock());
+                        break;//Si encuentra el artíclulo detiene la iteración
+                    }
+                }
+            }
+            File ticket=generateTicket(stock);
+            oos.writeInt(TASK_COMPLETE);
+            //Se envía el ticket
+            oos.writeUTF(ticket.getName());
+            oos.flush();
+            transfer.sendFile(ticket);
+        } catch (IOException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private static File generateTicket(ArrayList<Item> cart) {
+        File ticket=new File(getDir()+"ticket.txt");
+        try {
+            FileWriter fw=new FileWriter(ticket);
+            BufferedWriter br=new BufferedWriter(fw);
+            float total=0;
+            for(Item i:cart){
+                String line="Artículo: "+i.getName()+" Cantidad: "+i.getStock()+" Precio: "+i.getPrice()+"\n";
+                total=total+(i.getStock()*i.getPrice());
+                br.append(line);
+                br.flush();
+            }
+            br.append("\n\nTotal: "+total);
+            br.flush();
+            br.close();
+            fw.close();
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ticket;
     }
 
     

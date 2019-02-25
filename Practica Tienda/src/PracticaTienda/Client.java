@@ -63,37 +63,69 @@ public class Client {
     public ArrayList<Item> getStock() throws IOException{
         System.out.println("Obteniendo Stock");
         ArrayList stock=new ArrayList();
-        int requestCode=0;
         oos.writeInt(REQUEST_GET_STOCK);
         oos.flush();
-        do{
+        /*int requestCode=0;
+            oos.writeInt(REQUEST_GET_STOCK);
+            oos.flush();
+            do{
             try{
-                requestCode=ois.readInt();
-                
+            requestCode=ois.readInt();
+            
             }catch(IOException e){
-                requestCode=0;
+            requestCode=0;
             }
             if(requestCode==REQUEST_UPLOAD){
-                try {
-                    Item i=(Item)ois.readObject();
-                    stock.add(i);
-                    System.out.println("Artículo recibido: "+i.getName());
-                    oos.writeInt(ON_READY_RESULT);
-                    oos.flush();
-                } catch (IOException ex) {
-                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            try {
+            Item i=(Item)ois.readObject();
+            stock.add(i);
+            System.out.println("Artículo recibido: "+i.getName());
+            oos.writeInt(ON_READY_RESULT);
+            oos.flush();
+            } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }while(requestCode!=TASK_COMPLETE);
+            }
+            }while(requestCode!=TASK_COMPLETE);*/
+        try {
+            ItemList list=(ItemList)ois.readObject();
+            stock=list.getList();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return stock;
     }
     
-    /*public File buy(ArrayList<Item> carrito){
-    return     
+    public File buy(ArrayList<Item> carrito){
+        try {
+            oos.writeInt(REQUEST_BUY);
+            oos.flush();
+            System.out.println("Realizando compra");
+            oos.writeObject(new ItemList(carrito));
+            oos.flush();
+            int requestCode=0;
+            do{//Espera mientras el servidor procesa la compra
+                try{
+                    requestCode=ois.readInt();
+                }catch(IOException e){
+                    requestCode=0;
+                }
+                
+            }while(requestCode!=TASK_COMPLETE);
+            //Se recibe el ticket
+            String filename=ois.readUTF();
+            int result=transfer.getFile(directorio);
+            if(result==SUCCESFULL){
+                return new File(directorio+filename);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    return null; 
     }
-    
+    /*
     private File getTicket(){
         
     }*/
