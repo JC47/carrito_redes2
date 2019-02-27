@@ -6,9 +6,14 @@
 
 package PracticaTienda;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.*;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
+import static utils.Codes.SERVER_REQUEST_PORT;
 /**
  *
  * @author JavierCalette
@@ -16,19 +21,23 @@ import javax.swing.DefaultListModel;
 public class ClientView extends javax.swing.JFrame {
     
     ArrayList<Item> productos;
-    ArrayList<ItemCart> carrito;
+    ArrayList<Item> carritoAux;
     Item mainProduct;
     DefaultListModel<String> listaAux;
+    Client client;
     
-    /** Creates new form ClientView */
-    public ClientView() {
+    /** Creates new form ClientView
+     * @param ip */
+    public ClientView(String ip) {
+        
+        
         initComponents();
         
         this.productos = new ArrayList<>();
-        this.carrito = new ArrayList<>();
+        this.carritoAux = new ArrayList<>();
         this.listaAux = new DefaultListModel();
         
-        Item i1 = new Item(1,"foto1.jpg", "Producto1",11,101);
+        /*Item i1 = new Item(1,"foto1.jpg", "Producto1",11,101);
         Item i2 = new Item(2,"foto2.jpg", "Producto2",12,102);
         Item i3 = new Item(3,"foto3.jpg", "Producto3",13,103);
         Item i4 = new Item(4,"foto4.jpg", "Producto4",14,104);
@@ -38,7 +47,22 @@ public class ClientView extends javax.swing.JFrame {
         this.productos.add(i2);
         this.productos.add(i3);
         this.productos.add(i4);
-        this.productos.add(i5);
+        this.productos.add(i5);*/
+        try{
+            Socket cl = new Socket(ip,SERVER_REQUEST_PORT);
+            ObjectInputStream in = new ObjectInputStream(cl.getInputStream());
+            ObjectOutputStream out = new ObjectOutputStream(cl.getOutputStream());
+            
+            this.client = new Client(out,in);
+            
+            this.productos = this.client.getStock();
+            this.client.getFiles();
+            
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+        
         
         this.mainProduct = this.productos.get(0);
         this.updateSliderData();
@@ -346,37 +370,20 @@ public class ClientView extends javax.swing.JFrame {
     }//GEN-LAST:event_derButtonActionPerformed
 
     private void addToCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addToCartButtonActionPerformed
-        int quantity = Integer.parseInt(this.quantityLabel.getText());
-        int idItem = this.mainProduct.getId();
-        String list_label = this.mainProduct.getName() + " x " + quantity;
-        boolean flag = true;
-        
-        for(ItemCart producto : this.carrito){
-            if(producto.getIdItem() == idItem){
-                String search = producto.getName() + " x " + producto.getQuantity();
-                int auxQ = producto.getQuantity() + quantity;
-                producto.setQuantity(auxQ);
-                
-                int idx = this.listaAux.indexOf(search);
-                if(idx >= 0){
-                    String nItem = producto.getName() + " x " + auxQ;
-                    this.listaAux.setElementAt(nItem, idx);
-                }
-                flag = false;
-                break;
-            }
-        }
-        
-        if(flag){
-            ItemCart aux = new ItemCart(idItem, quantity, this.mainProduct.getName());
-            this.carrito.add(aux);
-            this.listaAux.addElement(list_label);
-        }
-        
+        this.carritoAux = this.client.addToCart(this.mainProduct);
+        this.updateList();
         this.cartList.setModel(this.listaAux);
                 
     }//GEN-LAST:event_addToCartButtonActionPerformed
-
+    
+    private void updateList(){
+        this.listaAux.clear();
+        for(Item aux : this.carritoAux){
+            String r = aux.getName() + " x " + aux.getStock();
+            this.listaAux.addElement(r);
+        }
+    }
+    
     private void deleteProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteProductActionPerformed
         System.out.println(this.cartList.getSelectedIndex() + " - " + Arrays.toString(this.cartList.getSelectedIndices()));
         int[] idxs = this.cartList.getSelectedIndices();
@@ -386,15 +393,15 @@ public class ClientView extends javax.swing.JFrame {
                 String search = this.listaAux.get(ndeleted);
                 String[] parts = search.split(" x ");
                 System.out.println(parts[0]);
-                for(ItemCart producto : this.carrito){
+                for(Item producto : this.carritoAux){
                     if(producto.getName().equals(parts[0])){
-                        this.carrito.remove(producto);
+                        this.carritoAux = this.client.removeFromCart(producto);
                         break;
                     }
                 }
             }
-            this.listaAux.removeRange(idxs[0], idxs[idxs.length-1]);
         }
+        this.updateList();
     }//GEN-LAST:event_deleteProductActionPerformed
 
     private void confrimBuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confrimBuyActionPerformed
@@ -402,7 +409,7 @@ public class ClientView extends javax.swing.JFrame {
     }//GEN-LAST:event_confrimBuyActionPerformed
 
     private void finishBuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finishBuyActionPerformed
-        System.out.println(this.carrito.toString());
+        System.out.println(this.carritoAux.toString());
     }//GEN-LAST:event_finishBuyActionPerformed
 
     /**
@@ -431,11 +438,13 @@ public class ClientView extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(ClientView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        
+        String ip = JOptionPane.showInputDialog("Ingrese la ip del servidor");
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ClientView().setVisible(true);
+                new ClientView("127.0.0.1").setVisible(true);
             }
         });
     }
