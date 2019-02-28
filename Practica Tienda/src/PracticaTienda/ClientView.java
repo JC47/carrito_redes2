@@ -6,13 +6,17 @@
 
 package PracticaTienda;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import static utils.Codes.REQUEST_CLOSE;
 import static utils.Codes.SERVER_REQUEST_PORT;
 /**
  *
@@ -25,6 +29,9 @@ public class ClientView extends javax.swing.JFrame {
     Item mainProduct;
     DefaultListModel<String> listaAux;
     Client client;
+    Socket cl;
+    ObjectInputStream in;
+    ObjectOutputStream out;
     
     /** Creates new form ClientView
      * @param ip */
@@ -49,9 +56,9 @@ public class ClientView extends javax.swing.JFrame {
         this.productos.add(i4);
         this.productos.add(i5);*/
         try{
-            Socket cl = new Socket(ip,SERVER_REQUEST_PORT);
-            ObjectInputStream in = new ObjectInputStream(cl.getInputStream());
-            ObjectOutputStream out = new ObjectOutputStream(cl.getOutputStream());
+            this.cl = new Socket(ip,SERVER_REQUEST_PORT);
+            this.in = new ObjectInputStream(this.cl.getInputStream());
+            this.out = new ObjectOutputStream(this.cl.getOutputStream());
             
             this.client = new Client(out,in);
             
@@ -107,6 +114,11 @@ public class ClientView extends javax.swing.JFrame {
         exit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         productsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 255), 2, true), "Productos", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         productsPanel.setPreferredSize(new java.awt.Dimension(356, 356));
@@ -414,6 +426,18 @@ public class ClientView extends javax.swing.JFrame {
     private void finishBuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finishBuyActionPerformed
         System.out.println(this.carritoAux.toString());
     }//GEN-LAST:event_finishBuyActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            this.out.writeInt(REQUEST_CLOSE);//Cierra la conexión con el servidor
+            this.out.flush();
+            this.out.close();
+            this.in.close();
+            this.cl.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ClientView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
