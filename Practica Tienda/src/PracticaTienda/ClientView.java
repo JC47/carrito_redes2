@@ -370,7 +370,10 @@ public class ClientView extends javax.swing.JFrame {
     }//GEN-LAST:event_derButtonActionPerformed
 
     private void addToCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addToCartButtonActionPerformed
-        this.carritoAux = this.client.addToCart(this.mainProduct);
+        int quantity = Integer.parseInt(this.quantityLabel.getText());
+        for(int i = 0; i < quantity; i++){
+            this.carritoAux = this.client.addToCart(this.mainProduct);
+        }
         this.updateList();
         this.cartList.setModel(this.listaAux);
                 
