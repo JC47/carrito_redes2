@@ -79,6 +79,14 @@ public class ClientView extends javax.swing.JFrame {
         this.mainProductLabel.setText(this.mainProduct.getName());
         this.mainProductPriceLabel.setText("$"+this.mainProduct.getPrice());
         this.mainProductStockLabel.setText("Disponibles: "+this.mainProduct.getStock());
+        
+        java.io.File f = new java.io.File(".\\Cliente\\"+this.mainProduct.getPic().substring(this.mainProduct.getPic().lastIndexOf("\\")+1));
+        try {
+            mainImgProduct.setIcon(new javax.swing.ImageIcon(new javax.swing.ImageIcon(javax.imageio.ImageIO.read(f)).getImage().getScaledInstance(500, 300, java.awt.Image.SCALE_SMOOTH))); 
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     /** This method is called from within the constructor to
@@ -364,6 +372,15 @@ public class ClientView extends javax.swing.JFrame {
             i--;
         }
         this.mainProduct = this.productos.get(i);
+        
+        java.io.File f = new java.io.File(".\\Cliente\\"+this.mainProduct.getPic().substring(this.mainProduct.getPic().lastIndexOf("\\")+1));
+        try {
+            mainImgProduct.setIcon(new javax.swing.ImageIcon(new javax.swing.ImageIcon(javax.imageio.ImageIO.read(f)).getImage().getScaledInstance(500, 300, java.awt.Image.SCALE_SMOOTH))); 
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        
         System.out.println("Main - " + this.mainProduct.getName());
         this.updateSliderData();
     }//GEN-LAST:event_izqButtonActionPerformed
@@ -377,6 +394,16 @@ public class ClientView extends javax.swing.JFrame {
             i++;
         }
         this.mainProduct = this.productos.get(i);
+        
+        
+        java.io.File f = new java.io.File(".\\Cliente\\"+this.mainProduct.getPic().substring(this.mainProduct.getPic().lastIndexOf("\\")+1));
+        try {
+            mainImgProduct.setIcon(new javax.swing.ImageIcon(new javax.swing.ImageIcon(javax.imageio.ImageIO.read(f)).getImage().getScaledInstance(500, 300, java.awt.Image.SCALE_SMOOTH))); 
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        
         System.out.println("Main - " + this.mainProduct.getName());
         this.updateSliderData();
     }//GEN-LAST:event_derButtonActionPerformed
