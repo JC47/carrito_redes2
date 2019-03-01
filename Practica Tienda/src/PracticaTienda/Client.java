@@ -9,9 +9,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.pdfbox.pdmodel.*;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import static utils.Codes.*;
 import static utils.Strings.*;
 import utils.TCPTransfer;
@@ -188,5 +192,103 @@ public class Client {
         return directorio;
     }
     
-    
+    public void generarPDF(String dir) {
+        try{
+            PDDocument tick = new PDDocument();
+            PDPage pag = new PDPage();
+            tick.addPage(pag);
+            PDPageContentStream content = new PDPageContentStream(tick, pag);
+            content.setFont(PDType1Font.COURIER, 50);
+            content.beginText();
+            content.moveTextPositionByAmount(230, 700);
+            content.showText("ESCOM");
+            content.endText();
+            content.setFont(PDType1Font.COURIER, 20);
+            content.beginText();
+            content.moveTextPositionByAmount(75, 650);
+            content.showText("Aplicaciones para comunicaciones de red");
+            content.endText();
+            content.beginText();
+            content.moveTextPositionByAmount(200, 600);
+            content.showText("Ticket de compra");
+            content.endText();
+
+            content.beginText();
+            content.moveTextPositionByAmount(350, 550);
+            content.showText("Fecha: "+ LocalDate.now());
+            content.endText();
+
+            int cont=0;
+            int total=0;
+            content.beginText();
+            content.moveTextPositionByAmount(50, 500);
+            content.showText("Artículo");
+            content.endText();
+            content.beginText();
+            content.moveTextPositionByAmount(180, 500);
+            content.showText("Cantidad");
+            content.endText();
+            content.beginText();
+            content.moveTextPositionByAmount(300, 500);
+            content.showText("Precio Unitario");
+            content.endText();
+            content.beginText();
+            content.moveTextPositionByAmount(500, 500);
+            content.showText("Subtotal");
+            content.endText();
+            for(Item i:cart){
+                content.beginText();
+                content.moveTextPositionByAmount(60, 450-(cont*30));
+                content.showText(i.getName());
+                content.endText();
+                content.beginText();
+                content.moveTextPositionByAmount(220, 450-(cont*30));
+                content.showText(i.getStock()+"");
+                content.endText();
+                content.beginText();
+                content.moveTextPositionByAmount(370, 450-(cont*30));
+                content.showText(i.getPrice()+"");
+                content.endText();
+                content.beginText();
+                content.moveTextPositionByAmount(530, 450-(cont*30));
+                content.showText(i.getStock()*i.getPrice()+"");
+                total += (i.getStock()*i.getPrice());
+                content.endText();
+                cont++;
+            }
+            content.beginText();
+            content.moveTextPositionByAmount(80, 450-((cont+1)*30));
+            content.showText("Total");
+            content.endText();
+            content.beginText();
+            content.moveTextPositionByAmount(530, 450-((cont+1)*30));
+            content.showText(total+"");
+            content.endText();
+
+            PDImageXObject image = PDImageXObject.createFromFile(".\\src\\img\\logoIPN.png", tick);
+            content.drawImage(image, 0, 670, 120, 120);
+
+            content.drawLine(40, 530, 40, 440-((cont+1)*30));
+            content.drawLine(600, 530, 600, 440-((cont+1)*30));
+            content.drawLine(490, 530, 490, 440-((cont+1)*30));
+            content.drawLine(290, 530, 290, 440-(cont*30));
+            content.drawLine(170, 530, 170, 440-(cont*30));
+
+            content.drawLine(40, 530, 600, 530);
+            content.drawLine(40, 490, 600, 490);
+            content.drawLine(40, 440-(cont*30), 600, 440-(cont*30));
+            content.drawLine(40, 440-((cont+1)*30), 600, 440-((cont+1)*30));
+
+            image = PDImageXObject.createFromFile(".\\src\\img\\logoESCOM.png", tick);
+            content.drawImage(image, 480, 680, 100, 80);
+
+            content.close();
+
+            tick.save(dir);
+            tick.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 }
