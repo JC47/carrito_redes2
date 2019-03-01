@@ -415,12 +415,27 @@ public class ClientView extends javax.swing.JFrame {
 
     private void addToCartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addToCartButtonActionPerformed
         int quantity = Integer.parseInt(this.quantityLabel.getText());
-        for(int i = 0; i < quantity; i++){
-            this.carritoAux = this.client.addToCart(this.mainProduct);
+        int contin=0;
+        int stock=0;
+        for(Item item:this.carritoAux){
+            if(item.getId()==this.mainProduct.getId()){//Si el producto ya se había agregado, se incrementa el contador stock
+                stock=item.getStock();
+                break;
+            }
         }
-        this.updateList();
-        this.cartList.setModel(this.listaAux);
-                
+        this.mainProduct.getStock();
+//        System.out.println(quantity + "  " + stock + "  " + this.mainProduct.getStock());
+        if(quantity+stock > this.mainProduct.getStock()){
+            contin=1;
+            contin = JOptionPane.showConfirmDialog(this, "La cantidad de elementos que desea comprar supera nuestro inventario. \nSu pedido podria tardar. \n¿Desea continuar?");
+        }
+        if(contin==0){
+            for(int i = 0; i < quantity; i++){
+                this.carritoAux = this.client.addToCart(this.mainProduct);
+            }
+            this.updateList();
+            this.cartList.setModel(this.listaAux);
+        }
     }//GEN-LAST:event_addToCartButtonActionPerformed
     
     private void updateList(){
@@ -442,7 +457,11 @@ public class ClientView extends javax.swing.JFrame {
                 System.out.println(parts[0]);
                 for(Item producto : this.carritoAux){
                     if(producto.getName().equals(parts[0])){
-                        this.carritoAux = this.client.removeFromCart(producto);
+                        int quant = producto.getStock();
+                        for(int j=0;j<quant;j++){
+                            System.out.println("\t"+producto.getStock());
+                            this.carritoAux = this.client.removeFromCart(producto);
+                        }
                         break;
                     }
                 }
