@@ -109,7 +109,7 @@ public class ClientView extends javax.swing.JFrame {
         mainProductStockLabel = new javax.swing.JLabel();
         cartPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        cartList = new javax.swing.JList<>();
+        cartList = new javax.swing.JList<String>();
         deleteProduct = new javax.swing.JButton();
         confrimBuy = new javax.swing.JButton();
         finishBuy = new javax.swing.JButton();
@@ -117,7 +117,7 @@ public class ClientView extends javax.swing.JFrame {
         finalName = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        finalList = new javax.swing.JList<>();
+        finalList = new javax.swing.JList<String>();
         ticket = new javax.swing.JButton();
         exit = new javax.swing.JButton();
 
@@ -311,6 +311,11 @@ public class ClientView extends javax.swing.JFrame {
         );
 
         ticket.setText("Ticket");
+        ticket.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ticketActionPerformed(evt);
+            }
+        });
 
         exit.setText("Salir");
         exit.addActionListener(new java.awt.event.ActionListener() {
@@ -465,6 +470,25 @@ public class ClientView extends javax.swing.JFrame {
             Logger.getLogger(ClientView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_formWindowClosing
+
+    private void ticketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ticketActionPerformed
+                // TODO add your handling code here:
+        javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
+        int retrival = chooser.showSaveDialog(null);
+        if (retrival == javax.swing.JFileChooser.APPROVE_OPTION) {
+            try {
+                String dir = chooser.getSelectedFile()+"";
+                if(!dir.endsWith(".pdf")){
+                    dir+=".pdf";
+                }
+                System.out.println(dir);
+                this.client.generarPDF(dir);
+                JOptionPane.showMessageDialog(null, "Ticket Guardado en :\n"+dir);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_ticketActionPerformed
 
     /**
      * @param args the command line arguments
