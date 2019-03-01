@@ -454,12 +454,12 @@ public class ClientView extends javax.swing.JFrame {
                 int ndeleted = idxs[i];
                 String search = this.listaAux.get(ndeleted);
                 String[] parts = search.split(" x ");
-                System.out.println(parts[0]);
+//                System.out.println(parts[0]);
                 for(Item producto : this.carritoAux){
                     if(producto.getName().equals(parts[0])){
                         int quant = producto.getStock();
                         for(int j=0;j<quant;j++){
-                            System.out.println("\t"+producto.getStock());
+//                            System.out.println("\t"+producto.getStock());
                             this.carritoAux = this.client.removeFromCart(producto);
                         }
                         break;
