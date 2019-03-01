@@ -41,7 +41,7 @@ public class Server {
                 System.out.println("Preparado para nueva conexión");
                 Socket s=ss.accept();
                 ArrayList<Item> stock=getStock();
-                ArrayList<File> images=getPics(directorio);
+                ArrayList<File> images=getPics(stock);
                 ObjectOutputStream oos=new ObjectOutputStream(s.getOutputStream());
                 ObjectInputStream ois=new ObjectInputStream(s.getInputStream());
                 TCPTransfer transfer=new TCPTransfer(oos,ois);
@@ -120,12 +120,11 @@ public class Server {
      * @param path path of the pics
      * @return list of all pics
      */
-    private static ArrayList<File> getPics(String path) {
+    private static ArrayList<File> getPics(ArrayList<Item> imags) {
         ArrayList<File> files=new ArrayList();
-        File dir=new File(path);
-        if(dir.isDirectory()){
-            File []lectura=dir.listFiles(IMAGE_FILTER);
-            files.addAll(Arrays.asList(lectura));
+        for(int i=0;i<imags.size();i++){
+            File dir=new File(imags.get(i).getPic());
+            files.add(dir);
         }
         return files;
     }
