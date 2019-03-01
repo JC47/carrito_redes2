@@ -5,6 +5,7 @@
  */
 package PracticaTienda;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.File;
@@ -12,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -84,13 +86,32 @@ public class Server {
      * @return List of all avilable stock
      */
     private static ArrayList<Item> getStock() {
-        Item i=new Item(1,"p1","p1",10,100);
-        Item i2=new Item(2,"p2","p2",10,200);
-        Item i3=new Item(3,"p3","p3",10,300);
+        int cont=1;
         ArrayList<Item> list=new ArrayList();
-        list.add(i);
-        list.add(i2);
-        list.add(i3);
+        try{
+            File f = new File(".\\src\\img\\productos\\listaProductos");
+            FileInputStream fis = new FileInputStream(f);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+            String linea = br.readLine();
+            while(linea!=null && !"".equals(linea)){
+                System.out.println(linea);
+                String params[];
+                params = linea.split(",");
+                Item i=new Item(cont++,params[0],params[1],Integer.parseInt(params[2]),Integer.parseInt(params[3]));
+                list.add(i);
+                linea= br.readLine();
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        System.out.println(list.size());
+//        Item i=new Item(1,"p1","p1",10,100);
+//        Item i2=new Item(2,"p2","p2",10,200);
+//        Item i3=new Item(3,"p3","p3",10,300);
+//        list.add(i);
+//        list.add(i2);
+//        list.add(i3);
         return list;
     }
 
