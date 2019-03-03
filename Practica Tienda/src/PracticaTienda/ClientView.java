@@ -6,6 +6,9 @@
 
 package PracticaTienda;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,6 +19,7 @@ import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import static utils.Codes.REQUEST_CLOSE;
 import static utils.Codes.SERVER_REQUEST_PORT;
 /**
@@ -70,8 +74,11 @@ public class ClientView extends javax.swing.JFrame {
             e.printStackTrace();
         }
         
-        
-        this.mainProduct = this.productos.get(0);
+        int i=-1;
+        do{
+            i++;
+            this.mainProduct = this.productos.get(i);
+        }while(this.mainProduct.getStock()<=0);
         this.updateSliderData();
     }
     
@@ -118,10 +125,10 @@ public class ClientView extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         finalList = new javax.swing.JList<String>();
-        ticket = new javax.swing.JButton();
         exit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Voten por VMC");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -306,16 +313,9 @@ public class ClientView extends javax.swing.JFrame {
                     .addComponent(finalName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
                 .addContainerGap())
         );
-
-        ticket.setText("Ticket");
-        ticket.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ticketActionPerformed(evt);
-            }
-        });
 
         exit.setText("Salir");
         exit.addActionListener(new java.awt.event.ActionListener() {
@@ -336,7 +336,6 @@ public class ClientView extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(cartPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(ticket, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(finishBuy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(exit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -351,11 +350,10 @@ public class ClientView extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(finishBuy, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(ticket, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(exit, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE))
+                        .addGap(8, 8, 8)
+                        .addComponent(finishBuy, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(exit, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(finalPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -370,13 +368,16 @@ public class ClientView extends javax.swing.JFrame {
 
     private void izqButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_izqButtonActionPerformed
         int i = this.productos.indexOf(this.mainProduct);
-        if(i == 0){
-            i = (this.productos.size() - 1);
-        }
-        else{
-            i--;
-        }
-        this.mainProduct = this.productos.get(i);
+        
+        do{
+            if(i == 0){
+                i = (this.productos.size() - 1);
+            }
+            else{
+                i--;
+            }
+            this.mainProduct = this.productos.get(i);
+        }while(this.mainProduct.getStock()<=0);
         
         java.io.File f = new java.io.File(".\\Cliente\\"+this.mainProduct.getPic().substring(this.mainProduct.getPic().lastIndexOf("\\")+1));
         try {
@@ -392,13 +393,16 @@ public class ClientView extends javax.swing.JFrame {
 
     private void derButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_derButtonActionPerformed
         int i = this.productos.indexOf(this.mainProduct);
-        if(i == (this.productos.size() - 1)){
-            i = 0;
-        }
-        else{
-            i++;
-        }
-        this.mainProduct = this.productos.get(i);
+        
+        do{
+            if(i == (this.productos.size() - 1)){
+                i = 0;
+            }
+            else{
+                i++;
+            }
+            this.mainProduct = this.productos.get(i);
+        }while(this.mainProduct.getStock()<=0);
         
         
         java.io.File f = new java.io.File(".\\Cliente\\"+this.mainProduct.getPic().substring(this.mainProduct.getPic().lastIndexOf("\\")+1));
@@ -475,23 +479,6 @@ public class ClientView extends javax.swing.JFrame {
     }//GEN-LAST:event_confrimBuyActionPerformed
 
     private void finishBuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finishBuyActionPerformed
-        System.out.println(this.carritoAux.toString());
-    }//GEN-LAST:event_finishBuyActionPerformed
-
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        try {
-            this.out.writeInt(REQUEST_CLOSE);//Cierra la conexión con el servidor
-            this.out.flush();
-            this.out.close();
-            this.in.close();
-            this.cl.close();
-        } catch (IOException ex) {
-            Logger.getLogger(ClientView.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_formWindowClosing
-
-    private void ticketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ticketActionPerformed
-                // TODO add your handling code here:
         javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
         int retrival = chooser.showSaveDialog(null);
         if (retrival == javax.swing.JFileChooser.APPROVE_OPTION) {
@@ -507,7 +494,41 @@ public class ClientView extends javax.swing.JFrame {
                 ex.printStackTrace();
             }
         }
-    }//GEN-LAST:event_ticketActionPerformed
+        
+        
+        System.out.println(this.carritoAux.toString());
+        PDDocument tick = new PDDocument();
+        File ticket = client.buy(this.carritoAux);
+        this.dispose();
+//        try {
+//            FileOutputStream fOut = new FileOutputStream(ticket);
+//            tick.save(fOut);
+//        }
+//        catch(Exception e){
+//            e.printStackTrace();
+//        }
+        try {
+            this.out.writeInt(REQUEST_CLOSE);//Cierra la conexión con el servidor
+            this.out.flush();
+            this.out.close();
+            this.in.close();
+            this.cl.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ClientView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_finishBuyActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            this.out.writeInt(REQUEST_CLOSE);//Cierra la conexión con el servidor
+            this.out.flush();
+            this.out.close();
+            this.in.close();
+            this.cl.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ClientView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
@@ -536,7 +557,8 @@ public class ClientView extends javax.swing.JFrame {
         }
         //</editor-fold>
         
-        String ip = JOptionPane.showInputDialog("Ingrese la ip del servidor");
+//        String ip = JOptionPane.showInputDialog("Ingrese la ip del servidor");
+//        String ip = "localhost";
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -568,7 +590,6 @@ public class ClientView extends javax.swing.JFrame {
     private javax.swing.JLabel mainProductStockLabel;
     private javax.swing.JPanel productsPanel;
     private javax.swing.JTextField quantityLabel;
-    private javax.swing.JButton ticket;
     // End of variables declaration//GEN-END:variables
 
 }

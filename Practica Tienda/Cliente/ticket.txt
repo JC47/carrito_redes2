@@ -1,0 +1,14 @@
+Artículo: reloj 1 Cantidad: 2 Precio: 1300
+Artículo: reloj 2 Cantidad: 7 Precio: 500
+Artículo: reloj 3 Cantidad: 6 Precio: 3000
+Artículo: reloj 4 Cantidad: 10 Precio: 300
+Artículo: reloj 5 Cantidad: 10 Precio: 400
+Artículo: reloj 6 Cantidad: 9 Precio: 700
+Artículo: reloj 7 Cantidad: 2 Precio: 700
+Artículo: reloj 8 Cantidad: 3 Precio: 1400
+Artículo: reloj 9 Cantidad: 5 Precio: 1000
+Artículo: reloj 10 Cantidad: 4 Precio: 300
+Artículo: reloj 11 Cantidad: 15 Precio: 500
+
+
+Total: 56700.0
